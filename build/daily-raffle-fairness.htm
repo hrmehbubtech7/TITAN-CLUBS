@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- NanoGames is the best blockchain gaming platform -->
+  <title>Fairness Verification of Daily Raffle</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+  <link rel="stylesheet" type="text/css"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+  <style>
+    *,
+    body,
+    button,
+    input,
+    textarea,
+    select {
+      text-rendering: optimizeLegibility;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body,
+    div,
+    dl,
+    dt,
+    dd,
+    ul,
+    ol,
+    li,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    pre,
+    form,
+    fieldset,
+    input,
+    textarea,
+    p,
+    blockquote,
+    th,
+    td {
+      margin: 0;
+      padding: 0;
+    }
+
+    table {
+      border-collapse: collapse;
+      border-spacing: 0;
+    }
+
+    fieldset,
+    img {
+      border: 0;
+    }
+
+    address,
+    caption,
+    cite,
+    code,
+    dfn,
+    em,
+    strong,
+    th,
+    var {
+      font-style: normal;
+      font-weight: normal;
+    }
+
+    ol,
+    ul {
+      list-style: none;
+    }
+
+    caption,
+    th {
+      text-align: left;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-size: 100%;
+      font-weight: normal;
+    }
+
+    q:before,
+    q:after {
+      content: '';
+    }
+
+    abbr,
+    acronym {
+      border: 0;
+    }
+  </style>
+  <style type="text/css">
+    table {
+      table-layout: fixed;
+    }
+
+    table thead tr th:first-child {
+      min-width: 100px;
+    }
+
+    table tbody tr td {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .is-first {
+      background-color: rgba(195, 111, 24, 0.2);
+    }
+
+    .is-over-median {
+      color: #44B39D;
+    }
+
+    .is-at-median {
+      color: #3B3C3D;
+    }
+
+    .is-under-median {
+      color: #BF4A67;
+    }
+  </style>
+</head>
+
+<body>
+  <section class="section">
+    <div class="container">
+      <h1 class="title">Daily Raffle Verification Script</h1>
+    </div>
+    <hr>
+    <div class="container">
+      <div class="field">
+        <p class="control has-icons-left">
+          <input class="input" type="text" id="serverSeed" placeholder="Server Seed">
+          <span class="icon is-small is-left"><i class="fa fa-key"></i></span>
+        </p>
+      </div>
+      <div class="field">
+        <p class="control has-icons-left">
+          <input class="input" type="text" id="nonce" placeholder="Nonce">
+          <span class="icon is-small is-left"><i class="fa fa-key"></i></span>
+        </p>
+      </div>
+      <div class="field is-grouped">
+        <p class="control">
+          <a class="button is-primary" id="game_verify_submit">Verify</a>
+        </p>
+      </div>
+    </div>
+    <hr>
+    <div class="container">
+      <table class="table is-striped is-fullwidth is-hoverable is-narrow" style="display:table">
+        <thead>
+          <tr>
+            <th><b>Number</b></th>
+            <th><b>Ticket</b></th>
+            <th><b>Prize</b></th>
+            <th><b>Place</b></th>
+          </tr>
+        </thead>
+        <tbody id="game_verify_table"></tbody>
+      </table>
+    </div>
+  </section>
+  <script type="text/javascript">
+    const day1 = 1, day2 = 5, day3 = 10, day4 = 25, day5 = 50;
+    const day1_prize = 10000, day2_prize = 1000, day3_prize = 500, day4_prize = 200, day5_prize = 100;
+    const total_tickets = day1 + day2 + day3 + day4 + day5;
+    CryptoJS.enc.u8array = {
+      /**
+       * Converts a word array to a Uint8Array.
+       *
+       * @param {WordArray} wordArray The word array.
+       *
+       * @return {Uint8Array} The Uint8Array.
+       *
+       * @static
+       *
+       * @example
+       *
+       *     var u8arr = CryptoJS.enc.u8array.stringify(wordArray);
+       */
+      stringify: function (wordArray) {
+        // Shortcuts
+        var words = wordArray.words;
+        var sigBytes = wordArray.sigBytes;
+
+        // Convert
+        var u8 = new Uint8Array(sigBytes);
+        for (var i = 0; i < sigBytes; i++) {
+          var byte = (words[i >>> 2] >>> (24 - (i % 4) * 8)) & 0xff;
+          u8[i] = byte;
+        }
+
+        return u8;
+      },
+
+      /**
+       * Converts a Uint8Array to a word array.
+       *
+       * @param {string} u8Str The Uint8Array.
+       *
+       * @return {WordArray} The word array.
+       *
+       * @static
+       *
+       * @example
+       *
+       *     var wordArray = CryptoJS.enc.u8array.parse(u8arr);
+       */
+      parse: function (u8arr) {
+        // Shortcut
+        var len = u8arr.length;
+
+        // Convert
+        var words = [];
+        for (var i = 0; i < len; i++) {
+          words[i >>> 2] |= (u8arr[i] & 0xff) << (24 - (i % 4) * 8);
+        }
+
+        return CryptoJS.lib.WordArray.create(words, len);
+      }
+    };
+    var isVerifying = false;
+    const clientSeed = "thedogestop";
+    $('#game_verify_submit').on('click', () => {
+      if (isVerifying) return;
+      isVerifying = true;
+      $('#serverSeed').parent().addClass('is-loading');
+      $('#nonce').parent().addClass('is-loading');
+
+      $('#game_verify_submit').addClass('is-loading');
+      $('#serverSeed, #nonce').attr('disabled', 'disabled');
+      $('#game_verify_table').html('');
+      const randomNumbers = generateFloats($("#serverSeed").val(), $("#nonce").val(), 0, total_tickets);
+      // console.log(randomNumbers);
+      const tmp_tickets = [];
+      for (let i = 0; i < total_tickets; i++) {
+        tmp_tickets.push(i);
+      }
+      let tmp_i = 0;
+      let tmp_no;
+      for (let i = 0; i < day1; i++) {
+        tmp_no = Math.floor(randomNumbers[tmp_i] * tmp_tickets.length);
+        addTableRow(randomNumbers[tmp_i], tmp_tickets[tmp_no], day1_prize, 1, 0);
+        tmp_tickets.splice(tmp_no, 1);
+        tmp_i++;
+      }
+      for (let i = 0; i < Number(day2); i++) {
+        tmp_no = Math.floor(randomNumbers[tmp_i] * tmp_tickets.length);
+        addTableRow(randomNumbers[tmp_i], tmp_tickets[tmp_no], day2_prize, 2, 0);
+        tmp_tickets.splice(tmp_no, 1);
+        tmp_i++;
+      }
+      for (let i = 0; i < day3; i++) {
+        tmp_no = Math.floor(randomNumbers[tmp_i] * tmp_tickets.length);
+        addTableRow(randomNumbers[tmp_i], tmp_tickets[tmp_no], day3_prize, 3, 0);
+        tmp_tickets.splice(tmp_no, 1);
+        tmp_i++;
+      }
+      for (let i = 0; i < day4; i++) {
+        tmp_no = Math.floor(randomNumbers[tmp_i] * tmp_tickets.length);
+        addTableRow(randomNumbers[tmp_i], tmp_tickets[tmp_no], day4_prize, 4, 0);
+        tmp_tickets.splice(tmp_no, 1);
+        tmp_i++;
+      }
+      for (let i = 0; i < day5; i++) {
+        tmp_no = Math.floor(randomNumbers[tmp_i] * tmp_tickets.length);
+        addTableRow(randomNumbers[tmp_i], tmp_tickets[tmp_no], day5_prize, 5, 0);
+        tmp_tickets.splice(tmp_no, 1);
+        tmp_i++;
+      }
+    });
+
+    const addTableRow = (hash, bust, prize, place, index) => {
+      $('<tr/>').attr({
+        'class': index === 0 ? 'is-first' : null
+      }).append(
+        $('<td/>').text(hash)
+      ).append(
+        $('<td/>').text(bust)
+      ).append(
+        $('<td/>').text(prize)
+      ).append(
+        $('<td/>').text(place)
+      ).appendToWithIndex($('#game_verify_table'), index);
+      $('#serverSeed').parent().removeClass('is-loading');
+      $('#nonce').parent().removeClass('is-loading');
+      $('#game_verify_submit').removeClass('is-loading');
+      $('#serverSeed, #nonce, #game_verify_submit').removeAttr("disabled");
+      isVerifying = false;
+    };
+    const hashVal = (seed, salt) => {
+      const hmac = CryptoJS.HmacSHA256(salt, seed);
+      return hmac.toString(CryptoJS.enc.Hex);
+    }
+    const generateFloats = (serverSeed, nonce, cursor, count) => {
+      // Random number generator function
+      const rng = byteGenerator({ serverSeed, nonce, cursor });
+      // Declare bytes as empty array
+      const bytes = [];
+      // Populate bytes array with sets of 4 from RNG output
+      while (bytes.length < count * 4) {
+        bytes.push(rng.next().value);
+      }
+
+      // Return bytes as floats using lodash reduce function
+      return _.chunk(bytes, 4).map(bytesChunk => {
+        // console.log(bytesChunk);
+        return bytesChunk.reduce((result, value, i) => {
+          const divider = 256 ** (i + 1);
+          const partialResult = value / divider;
+          // console.log(result);
+          return result + partialResult;
+        }, 0)
+      }
+      );
+    };
+    function* byteGenerator({ serverSeed, nonce, cursor }) {
+
+      // Setup curser variables
+      let currentRound = Math.floor(cursor / 32);
+      let currentRoundCursor = cursor;
+      currentRoundCursor -= currentRound * 32;
+      // console.log("in byteGenerator");
+      // Generate outputs until cursor requirement fullfilled
+      while (true) {
+
+        // HMAC function used to output provided inputs into bytes
+        const hmac = CryptoJS.HmacSHA256(`${clientSeed}:${nonce}:${currentRound}`, serverSeed);
+        const buffer = hmac.toString(CryptoJS.enc.u8array);
+        // console.log(`${clientSeed}:${nonce}:${currentRound}`);
+        // Update curser for next iteration of loop
+        // console.log(buffer);
+        while (currentRoundCursor < 32) {
+          yield Number(buffer[currentRoundCursor]);
+          currentRoundCursor += 1;
+        }
+        currentRoundCursor = 0;
+        currentRound += 1;
+      }
+    };
+    $.fn.appendToWithIndex = function (to, index) {
+      if (!to instanceof jQuery) {
+        to = $(to);
+      };
+      if (index === 0) {
+        $(this).prependTo(to)
+      } else {
+        $(this).insertAfter(to.children().eq(index - 1));
+      }
+    };
+    var hash_url = window.location.search
+    if ((/\?hash=/).test(hash_url)) {
+      var hash = hash_url.replace(/\?hash=/, '')
+      $('#game_hash_input').val(hash)
+      $('#game_verify_submit').click()
+    }
+  </script>
+  <script>
+    // tell the embed parent frame the height of the content
+    if (window.parent && window.parent.parent) {
+      window.parent.parent.postMessage(["resultsFrame", {
+        height: document.body.getBoundingClientRect().height,
+        slug: "nwu2ffkv"
+      }], "*")
+    }
+  </script>
+</body>
+
+</html>

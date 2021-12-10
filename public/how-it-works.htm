@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- NanoGames is the best blockchain gaming platform -->
+  <title>How it works - Fairness</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+  <link rel="stylesheet" type="text/css" href="/bulma.css">
+  <link rel="stylesheet" type="text/css"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.min.js"></script>
+
+  <style>
+    *,
+    body,
+    button,
+    input,
+    textarea,
+    select {
+      text-rendering: optimizeLegibility;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body,
+    div,
+    dl,
+    dt,
+    dd,
+    ul,
+    ol,
+    li,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    pre,
+    form,
+    fieldset,
+    input,
+    textarea,
+    p,
+    blockquote,
+    th,
+    td {
+      margin: 0;
+      padding: 0;
+      margin-bottom: 10px;
+    }
+
+    table {
+      border-collapse: collapse;
+      border-spacing: 0;
+    }
+
+    fieldset,
+    img {
+      border: 0;
+    }
+
+    address,
+    caption,
+    cite,
+    code,
+    dfn,
+    em,
+    strong,
+    th,
+    var {
+      font-style: normal;
+      font-weight: normal;
+    }
+
+    ol,
+    ul {
+      list-style: none;
+    }
+
+    caption,
+    th {
+      text-align: left;
+    }
+
+    q:before,
+    q:after {
+      content: '';
+    }
+
+    abbr,
+    acronym {
+      border: 0;
+    }
+  </style>
+  <style type="text/css">
+    table {
+      table-layout: fixed;
+    }
+
+    table thead tr th:first-child {
+      width: 600px;
+      min-width: 600px;
+    }
+
+    table tbody tr td {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .is-first {
+      background-color: rgba(195, 111, 24, 0.2);
+    }
+
+    .is-over-median {
+      color: #44B39D;
+    }
+
+    .is-at-median {
+      color: #3B3C3D;
+    }
+
+    .is-under-median {
+      color: #BF4A67;
+    }
+  </style>
+</head>
+
+<body>
+  <section class="section">
+    <div class="container">
+      <h1 class="title">How it works - Fairness</h1>
+    </div>
+    <hr>
+    <div class="container">
+      <div class="styles__Container-l7i1ov-3 lfvVbR">
+        <h2 color="#fff" class="Title__H2-sc-1ncj9v4-1 dlAQlQ">Random Number Generation</h2>
+        <p color="inherit" class="P-ypk5v4-0 bEKOJb">For each verifiable bet, a client seed, a server seed, a nonce and
+          a cursor are used as the input parameters for the <a
+            href="https://en.wikipedia.org/wiki/Random_number_generation" target="_blank" rel="noopener noreferrer"
+            to="https://en.wikipedia.org/wiki/Random_number_generation" class="Link-q08rh0-0 jvvvYi">random number
+            generation</a> function. This function utilises the cryptographic hash function <a
+            href="https://en.wikipedia.org/wiki/HMAC" target="_blank" rel="noopener noreferrer"
+            to="https://en.wikipedia.org/wiki/HMAC" class="Link-q08rh0-0 jvvvYi">HMAC_SHA256</a> to generate bytes which
+          are then used as the foundation for how we generate provably fair random outcomes on our platform.</p>
+        <p color="inherit" class="P-ypk5v4-0 bEKOJb">
+        <pre
+          style="display: block; overflow-x: auto; padding: 0.5em; background: rgb(240, 240, 240); color: rgb(68, 68, 68);"><code><span style="color: rgb(136, 136, 136);">// Random number generation based on following inputs: serverSeed, clientSeed, nonce and cursor</span>
+        <span class="hljs-function"><span style="font-weight: bold;">function</span> <span style="color: rgb(136, 0, 0); font-weight: bold;">byteGenerator</span>(<span class="hljs-params">{ serverSeed, clientSeed, nonce, cursor }</span>) </span>{
+        
+          <span style="color: rgb(136, 136, 136);">// Setup curser variables</span>
+          <span style="font-weight: bold;">let</span> currentRound = <span style="color: rgb(57, 115, 0);">Math</span>.floor(cursor / <span style="color: rgb(136, 0, 0);">32</span>);
+          <span style="font-weight: bold;">let</span> currentRoundCursor = cursor;
+          currentRoundCursor -= currentRound * <span style="color: rgb(136, 0, 0);">32</span>;
+        
+          <span style="color: rgb(136, 136, 136);">// Generate outputs until cursor requirement fullfilled</span>
+          <span style="font-weight: bold;">while</span> (<span style="color: rgb(120, 169, 96);">true</span>) {
+        
+            <span style="color: rgb(136, 136, 136);">// HMAC function used to output provided inputs into bytes</span>
+            <span style="font-weight: bold;">const</span> hmac = createHmac(<span style="color: rgb(136, 0, 0);">'sha256'</span>, serverSeed);
+            hmac.update(<span style="color: rgb(136, 0, 0);">`<span style="color: rgb(68, 68, 68);">${clientSeed}</span>:<span style="color: rgb(68, 68, 68);">${nonce}</span>:<span style="color: rgb(68, 68, 68);">${currentRound}</span>`</span>);
+            <span style="font-weight: bold;">const</span> buffer = hmac.digest();
+        
+            <span style="color: rgb(136, 136, 136);">// Update curser for next iteration of loop</span>
+            <span style="font-weight: bold;">while</span> (currentRoundCursor &lt; <span style="color: rgb(136, 0, 0);">32</span>) {
+              <span style="font-weight: bold;">yield</span> <span style="color: rgb(57, 115, 0);">Number</span>(buffer[currentRoundCursor]);
+              currentRoundCursor += <span style="color: rgb(136, 0, 0);">1</span>;
+            }
+            currentRoundCursor = <span style="color: rgb(136, 0, 0);">0</span>;
+            currentRound += <span style="color: rgb(136, 0, 0);">1</span>;
+          }
+        }</code></pre>
+        </p>
+        <h2 color="#fff" class="Title__H2-sc-1ncj9v4-1 ggPGxR">Server Seed</h2>
+        <p color="inherit" class="P-ypk5v4-0 bEKOJb">In coin flip game, The server seed is generated by our system as a random 256-character
+          hex string. You are then provided with an encrypted hash of that generated server seed before you place any
+          bets. The reason we provide you with the encrypted form of the server seed is to ensure that the un-hashed
+          server seed cannot be changed by the casino operator, and that the player cannot calculate the results
+          beforehand.</p>
+        <p color="inherit" class="P-ypk5v4-0 bEKOJb">You can see the server seed from its hashed version in the next round.</p>
+        <p color="inherit" class="P-ypk5v4-0 bEKOJb">From this point you are able to verify that the hashed server seed
+          matches that of the un-hashed server seed. This process can be verified via our un-hashed server seed function
+          found in the menu above.</p>
+        <p>
+          In the Raffle and the Color game, We take a Server Seed and hash it (SHA256), creating a new Server Seed. Then we take that Server Seed and hash that too. We repeat this process until we have 2 million hashes -- 2 million server seeds. The very first game of crash uses the 2 millionth server seed, and each game after that works backwards down the list of server seeds. Second game uses the 1,999,999th hash and so on and so forth.
+        </p>
+        <h2 color="#fff" class="Title__H2-sc-1ncj9v4-1 ggPGxR">Client Seed</h2>
+        <p color="inherit" class="P-ypk5v4-0 bEKOJb">The Client Seed is always unique. - "thedogestop"</p>
+        <h2 color="#fff" class="Title__H2-sc-1ncj9v4-1 ggPGxR">Nonce</h2>
+        <p color="inherit" class="P-ypk5v4-0 bEKOJb">The nonce is simply a number that increments as every new bet is
+          made. Due to the nature of the SHA256 cryptographic function, this creates a completely new result each time,
+          without having to generate a new client seed and server seed.</p>
+        <p color="inherit" class="P-ypk5v4-0 bEKOJb">The implementation of nonce, ensures we remain committed to your
+          client seed and server seed pair, whilst generating new results for each bet placed.</p>
+        <h2 color="#fff" class="Title__H2-sc-1ncj9v4-1 ggPGxR">Cursor (Incremental Number)</h2>
+        <p color="inherit" class="P-ypk5v4-0 bEKOJb">We use 4 bytes of data to generate a single game result, and
+          because SHA256 is limited to 32 bytes, we utilise this implementation of a cursor to give us the ability to
+          create more game events without having to modify our provable fair algorithm.</p>
+        <p color="inherit" class="P-ypk5v4-0 bEKOJb">The cursor is only iterated over when the game being played
+          requires the generation of more than 8 (32 bytes / 4 bytes) possible outcomes.</p>
+        <p color="inherit" class="P-ypk5v4-0 bEKOJb">The cursor starts as 0 and gets increased by 1 every time the 32
+          bytes are returned by the HMAC_SHA256 function. If we don’t require more than 8 random numbers to be generated
+          for the game events, then the curser does not increment as there is no need to generate any additional
+          possible game outcomes.</p>        
+      </div>
+      <div class="styles__Container-l7i1ov-3 lfvVbR">
+        <h2 color="#fff" class="Title__H2-sc-1ncj9v4-1 dlAQlQ">Bytes to Floats</h2>
+        <p color="inherit" class="P-ypk5v4-0 bEKOJb">The output of the Random Number Generator (byteGenerator) function
+          is a hexadecimal 32-byte hash. As explained under the cursor implementation, we use 4 bytes of data to
+          generate a single game result. Each set of 4 bytes are used to generate floats between 0 and 1 (4 bytes are
+          used instead of one to ensure a higher level of precision when generating the float.) It is with these
+          generated floats that we derive the formal output of the provable fair algorithm before it is translated into
+          game events.</p>
+        <p color="inherit" class="P-ypk5v4-0 bEKOJb">
+        <pre
+          style="display: block; overflow-x: auto; padding: 0.5em; background: rgb(240, 240, 240); color: rgb(68, 68, 68);"><code><span style="color: rgb(136, 136, 136);">// Convert the hash output from the rng byteGenerator to floats</span>
+        <span class="hljs-function"><span style="font-weight: bold;">function</span> <span style="color: rgb(136, 0, 0); font-weight: bold;">generateFloats</span> (<span class="hljs-params">{ serverSeed, clientSeed, nonce, cursor, count }</span>) </span>{
+          <span style="color: rgb(136, 136, 136);">// Random number generator function</span>
+          <span style="font-weight: bold;">const</span> rng = byteGenerator({ serverSeed, clientSeed, nonce, cursor });
+          <span style="color: rgb(136, 136, 136);">// Declare bytes as empty array</span>
+          <span style="font-weight: bold;">const</span> bytes = [];
+        
+          <span style="color: rgb(136, 136, 136);">// Populate bytes array with sets of 4 from RNG output</span>
+          <span style="font-weight: bold;">while</span> (bytes.length &lt; count * <span style="color: rgb(136, 0, 0);">4</span>) {
+            bytes.push(rng.next().value);
+          }
+        
+          <span style="color: rgb(136, 136, 136);">// Return bytes as floats using lodash reduce function</span>
+          <span style="font-weight: bold;">return</span> _.chunk(bytes, <span style="color: rgb(136, 0, 0);">4</span>).map(<span class="hljs-function"><span class="hljs-params">bytesChunk</span> =&gt;</span>
+            bytesChunk.reduce(<span class="hljs-function">(<span class="hljs-params">result, value, i</span>) =&gt;</span> {
+              <span style="font-weight: bold;">const</span> divider = <span style="color: rgb(136, 0, 0);">256</span> ** (i + <span style="color: rgb(136, 0, 0);">1</span>);
+              <span style="font-weight: bold;">const</span> partialResult = value / divider;
+              <span style="font-weight: bold;">return</span> result + partialResult;
+            }, <span style="color: rgb(136, 0, 0);">0</span>)
+          );
+        };</code></pre>
+        </p>
+        <h2 color="#fff" class="Title__H2-sc-1ncj9v4-1 dlAQlQ">Floats to Raffle & Game Events</h2>
+        <p color="inherit" class="P-ypk5v4-0 bEKOJb">Where the process of generating random outputs is universal for all
+          our games, it's at this point in the game outcome generation where a unique procedure is implemented to
+          determine the translation from floats to game events.</p>
+        <p color="inherit" class="P-ypk5v4-0 bEKOJb">The randomly float generated is multiplied by the possible
+          remaining outcomes of the particular game being played. For example: In a hourly raffle that generates a 100 tickets, this
+          would simply be done by multiplying the float by 100. The result of this equation is then translated into a
+          corresponding game event. For games where multiple game events are required, this process continues through
+          each corresponding 4 bytes in the result chain that was generated using the described byteGenerator function.
+        </p>
+        <h2 color="#fff" class="Title__H2-sc-1ncj9v4-1 dlAQlQ">Shuffle of Raffle & Game Events</h2>      
+        <p color="inherit" class="P-ypk5v4-0 bEKOJb">As an example, in hourly raffle, there is at first 100 tickets available,
+           and therefore the first ticket is translated by multiplying the float by 52. Once
+          this ticket has been dealt, there is only 99 remaining tickets, and therefore the second ticket
+          translation is done by multiplying the second float generated by 99. This continues in the same fashion until
+          5 of the tickets(winners) required have been generated.</p>
+      
+      </div>
+    </div>
+  </section>
+
+</body>
+
+</html>
