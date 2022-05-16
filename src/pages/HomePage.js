@@ -141,7 +141,7 @@ const HomePage = (props) => {
       className="DashboardPage"
     >
       <div className='home-title'>
-      <h1>The Titan Clubs</h1>
+      <h1>CROWN MALLS</h1>
         <small>Make money everyday with you. <br /> ( The Provably Fair Game. )</small>
       </div>
       {
@@ -267,8 +267,6 @@ const HomePage = (props) => {
           </ul>
           <br />
           <br />
-          <textarea value={review} onChange={e => setReview(e.target.value)} rows="5" className="feedback-input" placeholder="You can leave feedback."></textarea>
-          <Button onClick={postFeedback} className="text-center" component="a" color="primary">Post</Button>
         </Col>
       </Row>
       <Snackbar
