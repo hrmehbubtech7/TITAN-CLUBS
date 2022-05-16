@@ -315,7 +315,7 @@ exports.user_phone = (req, res, next) => {
     request.headers({
       "content-type": "application/x-www-form-urlencoded",
       "cache-control": "no-cache",
-      authorization: "mvG4vlBYX0scnMW7bYfXNhVycLQJBq7p5qFcNrrY8QGmIBZttIWQRglxUPW8"
+      authorization: "gzfMwVxWv7dATl9pO2NnL6E5DKPQu0iSyZGFcqsjJ3ItoCYReh80RFB9yjWsidAKlrkn1VEpG5uLhZDN"
     });
     // ////////////////////////////////////////////////////////////////
     request.form({
@@ -360,7 +360,7 @@ exports.user_phone_change = (req, res, next) => {
           request.headers({
             "content-type": "application/x-www-form-urlencoded",
             "cache-control": "no-cache",
-            authorization: "mvG4vlBYX0scnMW7bYfXNhVycLQJBq7p5qFcNrrY8QGmIBZttIWQRglxUPW8"
+            authorization: "gzfMwVxWv7dATl9pO2NnL6E5DKPQu0iSyZGFcqsjJ3ItoCYReh80RFB9yjWsidAKlrkn1VEpG5uLhZDN"
           });
           // ////////////////////////////////////////////////////////////////
           request.form({
@@ -403,7 +403,7 @@ exports.user_phone_change = (req, res, next) => {
       request.headers({
         "content-type": "application/x-www-form-urlencoded",
         "cache-control": "no-cache",
-        authorization: "mvG4vlBYX0scnMW7bYfXNhVycLQJBq7p5qFcNrrY8QGmIBZttIWQRglxUPW8"
+        authorization: "gzfMwVxWv7dATl9pO2NnL6E5DKPQu0iSyZGFcqsjJ3ItoCYReh80RFB9yjWsidAKlrkn1VEpG5uLhZDN"
       });
       // ////////////////////////////////////////////////////////////////
       request.form({
@@ -531,7 +531,7 @@ exports.user_login = async (req, res, next) => {
       request.headers({
         "content-type": "application/x-www-form-urlencoded",
         "cache-control": "no-cache",
-        authorization: "mvG4vlBYX0scnMW7bYfXNhVycLQJBq7p5qFcNrrY8QGmIBZttIWQRglxUPW8"
+        authorization: "gzfMwVxWv7dATl9pO2NnL6E5DKPQu0iSyZGFcqsjJ3ItoCYReh80RFB9yjWsidAKlrkn1VEpG5uLhZDN"
       });
       // ////////////////////////////////////////////////////////////////
       request.form({
