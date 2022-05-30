@@ -16,12 +16,12 @@ const app = express();
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
-mongoose.set('useUnifiedTopology', true);
+
 app.use(helmet());
-app.use(cors());
-const port = 7777;
-const user = require("./routes/user");
-// Body parser middleware
+
+
+
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 // app.use(morgan('combined', { stream: winston.stream }));
@@ -30,8 +30,8 @@ const db = require("./dbConfig").mongoURI[app.settings.env];
 
 // Connect to MongoDB
 mongoose
-  .connect(db, { useUnifiedTopology: true, useNewUrlParser: true })
-  .then(() => console.log("MongoDB Connected: ", app.settings.env))
+  ni, { useUnifiedTopology: true, useNewUrlParser: true })
+  .then(()  console.log("MongoDB Connected: ", app.settings.env))
   .catch((err) => console.log(err));
   // console.log(app.settings);
 
@@ -45,7 +45,7 @@ app.use(express.static(path.resolve(__dirname, "build")));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Use Routes
 
-app.get("/json/:file",function(req,res){
+app.get("/json/:file",function(req,res){xx
 
   var fileName = req.params.file;
   var file = path.normalize(__dirname + '/build/static/' + fileName+".json");
